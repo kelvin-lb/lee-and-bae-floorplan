@@ -160,9 +160,8 @@
     // EXACT DIMENSIONS FROM PDF (Proposed First Floor Plan, A-100)
     // Scale: 1/4" = 1'-0" | Origin: NW corner | X→East, Z→South
     // ═══════════════════════════════════════════════════════════
-    const W = 24.83;       // 24'-10" building width (7" + 11'-4" + 1'-7" + 5'-9" + 5'-7") = 298", total with vestibule = 351" = 29'-3"
+    const W = 29.25;       // 29'-3" = 351" building width (7" + 11'-4" + 1'-7" + 5'-9" + 5'-7" + 4'-5")
     const T = 0.5;         // wall thickness
-    const VEST_W = 4.42;   // 4'-5" vestibule width
     const VEST_D = 4.5;    // 4'-6" vestibule depth
 
     // Left (west) wall zones — top to bottom
@@ -398,7 +397,7 @@
     { const g=new THREE.GridHelper(100,100,0x333333,0x282828);g.position.set(W/2,0.02,TOTAL/2);scene.add(g); }
 
     function fl(x,z,w,d,m){const o=new THREE.Mesh(new THREE.PlaneGeometry(w,d),m||floorMat);o.rotation.x=-Math.PI/2;o.position.set(x,0.01,z);o.receiveShadow=true;scene.add(o);}
-    fl(W/2, zEntry/2, W+VEST_W, zEntry);
+    fl(W/2, zEntry/2, W, zEntry);
     fl(W/2, (zStep+zGalEnd)/2, W, zGalEnd-zStep);
     fl(W/2, (zGalEnd+zBackEnd)/2, W, zBackEnd-zGalEnd, floor2);
     fl(W/2, (zBackEnd+zBottom)/2, W, zBottom-zBackEnd, floor3);
@@ -426,10 +425,10 @@
     addWall('East Wall (8\'-9\")',   W, hGal/2, (rz5+rz6)/2,           T, hGal, rz6-rz5);
 
     // VESTIBULE (entry bump-out, top-right)
-    addWall('Vestibule North', W+VEST_W/2, hEntry/2, 0,       VEST_W, hEntry, T);
-    addWall('Vestibule East',  W+VEST_W,   hEntry/2, VEST_D/2, T, hEntry, VEST_D);
-    addWall('Vestibule South', W+VEST_W/2, hEntry/2, VEST_D,  VEST_W, hEntry, T);
-    addWall('Vestibule Glass', W+T/4,      hEntry/2, VEST_D/2, T/2, hEntry, VEST_D, glassMat);
+    // Vestibule partition (glass wall separating vestibule from gallery, within building)
+    const vestX = s1+s2+s3+s4; // x where vestibule starts (after 5'-9" segment)
+    addWall('Vestibule Partition', vestX, hEntry/2, VEST_D/2, T/2, hEntry, VEST_D, glassMat);
+    addWall('Vestibule South Wall', (vestX+W)/2, hEntry/2, VEST_D, W-vestX, hEntry, T, wallIn);
 
     // NORTH WALL (z=0, street-facing) — full building height
     addWall('North Wall (7\")',           s1/2,                    hGal/2, 0, s1, hGal, T);
@@ -487,7 +486,7 @@
     // CEILINGS
     // ═══════════════════════════════════════════════════════════
     function cl(x,z,w,d,h){const o=new THREE.Mesh(new THREE.PlaneGeometry(w,d),ceilMat);o.rotation.x=Math.PI/2;o.position.set(x,h,z);ceilGrp.add(o);}
-    cl(W/2, zEntry/2, W+VEST_W, zEntry, hEntry);
+    cl(W/2, zEntry/2, W, zEntry, hEntry);
     cl(W/2, (zStep+zGalEnd)/2, W, zGalEnd-zStep, hGal);
     cl(W/2, (zGalEnd+zBackEnd)/2, W, zBackEnd-zGalEnd, hGal);
     cl(W/2, (zBackEnd+zBottom)/2, W, zBottom-zBackEnd, hGal);
@@ -545,8 +544,7 @@
     lbl('RAMP', '(02) Exist. Ramp', 8, 1.5, zTrans+8, 0.4);
 
     // Dimension lines — total width = 351" = 29'-3"
-    dimDual(0, -1.5, W+VEST_W, -1.5, 0.1, "351\" = 29'-3\"", W+VEST_W);
-    dimDual(0, -1, W, -1, 0.1, "24'-10\"", W);
+    dimDual(0, -1.5, W, -1.5, 0.1, "351\" = 29'-3\"", W);
     dimDual(-2, 0, -2, TOTAL, 0.1, "~64'-0\"", TOTAL);
     dimDual(W+2, 0, W+2, zEntry, 0.1, "4'-0\"", 4.0);
     dimDual(W+2, zStep, W+2, zGalEnd, 0.1, "40'-2\"", 40.17);
@@ -559,7 +557,7 @@
     dimDual(s1+s2, -3, s1+s2+s3, -3, 0.1, "1'-7\"", s3);
     dimDual(s1+s2+s3, -3, s1+s2+s3+s4, -3, 0.1, "5'-9\"", s4);
     dimDual(s1+s2+s3+s4, -3, W, -3, 0.1, "5'-7\"", s5);
-    dimDual(W, -3, W+VEST_W, -3, 0.1, "4'-5\"", VEST_W);
+    dimDual(s1+s2+s3+s4+s5, -3, W, -3, 0.1, "4'-5\"", W-(s1+s2+s3+s4+s5));
     // Storage dimensions
     dimDual(-2, storageStart, -2, zGalEnd, 0.1, "15'-4\"", 15.33);
     dimDual(leftWidth, zGalEnd+1, W, zGalEnd+1, 0.1, "9'-0\"", 9.0);
@@ -716,7 +714,7 @@
     // ═══════════════════════════════════════════════════════════
     // LOAD FROM LOCALSTORAGE (versioned to clear stale data)
     // ═══════════════════════════════════════════════════════════
-    const LAYOUT_VERSION = 'v5-2026-03-28-351in';
+    const LAYOUT_VERSION = 'v6-2026-03-28-29ft3in';
     const storedVersion = localStorage.getItem('gallery-layout-version');
 
     if (storedVersion !== LAYOUT_VERSION) {
