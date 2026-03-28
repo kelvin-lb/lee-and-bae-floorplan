@@ -468,13 +468,14 @@
     addWall('Bathroom Partition', 15.58, hGal/2, (zTrans+zBottom)/2, T, hGal, zBottom-zTrans-2, wallIn);
 
     // COLUMNS (structural, full gallery height)
+    // COLUMNS — only 4 gallery columns per PDF (no back room columns)
+    // Positioned at approx 1/3 and 2/3 of building width (29.25')
+    // Upper pair at ~z=15, Lower pair at ~z=33
     function addCol(name, x, z, s) { return addWall(name, x, hGal/2, z, s||1.3, hGal, s||1.3, colMat); }
-    addCol('Column (Gallery NW)', 7,  18);
-    addCol('Column (Gallery NE)', 19, 18);
-    addCol('Column (Gallery SW)', 7,  32);
-    addCol('Column (Gallery SE)', 19, 32);
-    addCol('Column (Back Left)',  13, zGalEnd+3, 1.0);
-    addCol('Column (Back Right)', 20, zGalEnd+3, 1.0);
+    addCol('Column (Gallery NW)', 10,   15);
+    addCol('Column (Gallery NE)', 21,   15);
+    addCol('Column (Gallery SW)', 10,   33);
+    addCol('Column (Gallery SE)', 21,   33);
 
     _initialBuild = false;
 
@@ -714,7 +715,7 @@
     // ═══════════════════════════════════════════════════════════
     // LOAD FROM LOCALSTORAGE (versioned to clear stale data)
     // ═══════════════════════════════════════════════════════════
-    const LAYOUT_VERSION = 'v6-2026-03-28-29ft3in';
+    const LAYOUT_VERSION = 'v7-2026-03-28-columns';
     const storedVersion = localStorage.getItem('gallery-layout-version');
 
     if (storedVersion !== LAYOUT_VERSION) {
