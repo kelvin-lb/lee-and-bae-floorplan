@@ -160,7 +160,7 @@
     // EXACT DIMENSIONS FROM PDF (Proposed First Floor Plan, A-100)
     // Scale: 1/4" = 1'-0" | Origin: NW corner | X→East, Z→South
     // ═══════════════════════════════════════════════════════════
-    const W = 25.58;       // 25'-7" building width (7' + 11'-4" + 1'-7" + 5'-8")
+    const W = 25.67;       // 25'-8" building width (7' + 11'-4" + 1'-7" + 5'-9")
     const T = 0.5;         // wall thickness
     const VEST_W = 4.42;   // 4'-5" vestibule width
     const VEST_D = 4.5;    // 4'-6" vestibule depth
@@ -187,7 +187,7 @@
     const hGal   = 17.33;  // 17'-4" AFF (gallery, bedroom, office — full height)
 
     // Front wall segments (north, left to right)
-    const s1 = 7.0, s2 = 11.33, s3 = 1.58, s4 = 5.67;
+    const s1 = 7.0, s2 = 11.33, s3 = 1.58, s4 = 5.75;  // 7' + 11'-4" + 1'-7" + 5'-9"
 
     // Entry wall segments at z=4
     const ewL = 8.17;   // 8'-2" left segment
@@ -538,18 +538,22 @@
     lbl('NEW OFFICE', "17'-4\" AFF (5.28m)", 8, 3, (zTrans+zBottom)/2, 0.5);
     lbl('RAMP', '(02) Exist. Ramp', 8, 1.5, zTrans+8, 0.4);
 
-    // Dimension lines
-    dimDual(0, -1.5, W, -1.5, 0.1, "25'-7\"", W);
+    // Dimension lines — total width
+    dimDual(0, -1.5, W+VEST_W, -1.5, 0.1, "Total: 35'-8\"", W+VEST_W);
+    dimDual(0, -1, W, -1, 0.1, "25'-8\"", W);
     dimDual(-2, 0, -2, TOTAL, 0.1, "~64'-0\"", TOTAL);
     dimDual(W+2, 0, W+2, zEntry, 0.1, "4'-0\"", 4.0);
     dimDual(W+2, zStep, W+2, zGalEnd, 0.1, "40'-2\"", 40.17);
     dimDual(W+2, zGalEnd, W+2, zBackEnd, 0.1, "5'-8\"", 5.67);
     dimDual(W+2, zTrans, W+2, zBottom, 0.1, "12'-7\"", 12.58);
     dimDual(W+4, 0, W+4, storageStart, 0.1, "29'-4\"", 29.33);
-    // Width segments at top
+    // All 6 front width segments: 7' + 11'-4" + 1'-7" + 5'-9" + 5'-7" + 4'-5"
     dimDual(0, -3, s1, -3, 0.1, "7'-0\"", 7.0);
     dimDual(s1, -3, s1+s2, -3, 0.1, "11'-4\"", 11.33);
-    dimDual(s1+s2+s3, -3, W, -3, 0.1, "5'-8\"", 5.67);
+    dimDual(s1+s2, -3, s1+s2+s3, -3, 0.1, "1'-7\"", 1.58);
+    dimDual(s1+s2+s3, -3, W, -3, 0.1, "5'-9\"", 5.75);
+    dimDual(W-ewR, -4.5, W, -4.5, 0.1, "5'-7\"", ewR);
+    dimDual(W, -3, W+VEST_W, -3, 0.1, "4'-5\"", VEST_W);
     // Storage dimensions
     dimDual(-2, storageStart, -2, zGalEnd, 0.1, "15'-4\"", 15.33);
     dimDual(leftWidth, zGalEnd+1, W, zGalEnd+1, 0.1, "9'-0\"", 9.0);
@@ -706,7 +710,7 @@
     // ═══════════════════════════════════════════════════════════
     // LOAD FROM LOCALSTORAGE (versioned to clear stale data)
     // ═══════════════════════════════════════════════════════════
-    const LAYOUT_VERSION = 'v3-2026-03-27-accurate';
+    const LAYOUT_VERSION = 'v4-2026-03-28-width-fix';
     const storedVersion = localStorage.getItem('gallery-layout-version');
 
     if (storedVersion !== LAYOUT_VERSION) {
