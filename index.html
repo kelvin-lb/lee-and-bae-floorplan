@@ -128,7 +128,7 @@
     <button onclick="openAddPanel()" style="background:rgba(68,170,136,.3);border-color:#4a9">+ Add Wall</button>
     <button onclick="saveToFile()" style="background:rgba(68,136,204,.3);border-color:#48c">💾 Save</button>
     <button onclick="document.getElementById('load-input').click()" style="background:rgba(68,136,204,.2);border-color:#48c">📂 Load</button>
-    <button onclick="if(confirm('Reset to original layout?')){localStorage.removeItem('gallery-layout-autosave');localStorage.removeItem('gallery-layout-version');location.reload();}" style="background:rgba(180,80,80,.2);border-color:#a55">↺ Reset</button>
+    <button onclick="if(confirm('Reset to default layout?')){localStorage.removeItem('gallery-layout-autosave');loadFromState(DEFAULT_LAYOUT,'Reset to default');}" style="background:rgba(180,80,80,.2);border-color:#a55">↺ Reset</button>
     <input type="file" id="load-input" accept=".json" style="display:none" onchange="loadFromFile(this)" />
   </div>
   <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"}}</script>
@@ -468,14 +468,9 @@
     addWall('Bathroom Partition', 15.58, hGal/2, (zTrans+zBottom)/2, T, hGal, zBottom-zTrans-2, wallIn);
 
     // COLUMNS (structural, full gallery height)
-    // COLUMNS — only 4 gallery columns per PDF (no back room columns)
-    // Positioned at approx 1/3 and 2/3 of building width (29.25')
-    // Upper pair at ~z=15, Lower pair at ~z=33
+    // COLUMNS — 1 gallery column + front pilaster only
     function addCol(name, x, z, s) { return addWall(name, x, hGal/2, z, s||1.3, hGal, s||1.3, colMat); }
-    addCol('Column (Gallery NW)', 10,   15);
-    addCol('Column (Gallery NE)', 21,   15);
-    addCol('Column (Gallery SW)', 10,   33);
-    addCol('Column (Gallery SE)', 21,   33);
+    addCol('Column (Gallery)', 21, 20);
 
     _initialBuild = false;
 
@@ -713,16 +708,18 @@
     });
 
     // ═══════════════════════════════════════════════════════════
-    // LOAD FROM LOCALSTORAGE (versioned to clear stale data)
+    // DEFAULT LAYOUT (final_floorplan.json embedded)
     // ═══════════════════════════════════════════════════════════
-    const LAYOUT_VERSION = 'v7-2026-03-28-columns';
+    const DEFAULT_LAYOUT = [{"idx":0,"name":"West Wall (Entry)","removed":false,"x":0,"y":8.665,"z":2,"width":0.5,"height":17.33,"depth":4,"matKey":"outer"},{"idx":1,"name":"West Wall (Gallery)","removed":false,"x":0,"y":8.665,"z":24.585,"width":0.5,"height":17.33,"depth":40.17,"matKey":"outer"},{"idx":2,"name":"West Wall (Back)","removed":false,"x":0,"y":8.665,"z":47.505,"width":0.5,"height":17.33,"depth":5.67,"matKey":"outer"},{"idx":3,"name":"West Wall (Trans)","removed":false,"x":0,"y":8.665,"z":50.84,"width":0.5,"height":17.33,"depth":1,"matKey":"outer"},{"idx":4,"name":"West Wall (Bottom)","removed":false,"x":0,"y":8.665,"z":57.63,"width":0.5,"height":17.33,"depth":12.58,"matKey":"outer"},{"idx":5,"name":"East Wall (Entry)","removed":false,"x":29.25,"y":8.665,"z":2,"width":0.5,"height":17.33,"depth":4,"matKey":"outer"},{"idx":6,"name":"East Wall (13'-6\")","removed":false,"x":29.25,"y":8.665,"z":9,"width":0.5,"height":17.33,"depth":9,"matKey":"outer"},{"idx":7,"name":"East Wall (18'-7\")","removed":false,"x":29.25,"y":8.665,"z":22.79,"width":0.5,"height":17.33,"depth":18.58,"matKey":"outer"},{"idx":8,"name":"East Wall (17'-11\")","removed":false,"x":29.25,"y":8.665,"z":41.04,"width":0.5,"height":17.33,"depth":17.92,"matKey":"outer"},{"idx":9,"name":"East Wall (0'-8\")","removed":false,"x":29.25,"y":8.665,"z":50.335,"width":0.5,"height":17.33,"depth":0.67,"matKey":"outer"},{"idx":10,"name":"East Wall (4'-2\")","removed":false,"x":29.25,"y":8.665,"z":52.755,"width":0.5,"height":17.33,"depth":4.17,"matKey":"outer"},{"idx":11,"name":"East Wall (8'-9\")","removed":false,"x":29.25,"y":8.665,"z":59.215,"width":0.5,"height":17.33,"depth":8.75,"matKey":"outer"},{"idx":12,"name":"Vestibule Partition","removed":false,"x":19.243,"y":5.375,"z":2.25,"width":0.25,"height":10.75,"depth":4.5,"matKey":"glass"},{"idx":13,"name":"Vestibule South Wall","removed":false,"x":24.247,"y":5.375,"z":4.5,"width":10.007,"height":10.75,"depth":0.5,"matKey":"inner"},{"idx":14,"name":"North Wall (7\")","removed":false,"x":0.292,"y":8.665,"z":0,"width":0.583,"height":17.33,"depth":0.5,"matKey":"outer"},{"idx":15,"name":"North Glass (11'-4\")","removed":false,"x":6.248,"y":8.665,"z":0,"width":11.33,"height":17.33,"depth":0.25,"matKey":"glass"},{"idx":16,"name":"North Column (1'-7\")","removed":false,"x":12.703,"y":8.665,"z":0.79,"width":1.58,"height":17.33,"depth":1.58,"matKey":"column"},{"idx":17,"name":"North Glass (5'-9\")","removed":false,"x":16.368,"y":8.665,"z":0,"width":5.75,"height":17.33,"depth":0.25,"matKey":"glass"},{"idx":18,"name":"North Wall (5'-7\")","removed":false,"x":22.033,"y":8.665,"z":0,"width":5.58,"height":17.33,"depth":0.25,"matKey":"glass"},{"idx":19,"name":"South Wall","removed":false,"x":14.625,"y":8.665,"z":63.92,"width":29.25,"height":17.33,"depth":0.5,"matKey":"outer"},{"idx":20,"name":"Entry Wall Left (8'-2\")","removed":false,"x":4.085,"y":5.375,"z":4,"width":8.17,"height":10.75,"depth":0.5,"matKey":"inner"},{"idx":21,"name":"Entry Wall Right (5'-7\")","removed":false,"x":26.46,"y":5.375,"z":4,"width":5.58,"height":10.75,"depth":0.5,"matKey":"inner"},{"idx":22,"name":"Entry Header","removed":false,"x":15.92,"y":10.5,"z":4,"width":15.5,"height":0.5,"depth":0.8,"matKey":"inner"},{"idx":23,"name":"Ceiling Step-up","removed":false,"x":14.625,"y":14.04,"z":4.5,"width":29.25,"height":6.58,"depth":0.5,"matKey":"inner"},{"idx":24,"name":"Bedroom North Wall","removed":false,"x":23.085,"y":8.665,"z":29.33,"width":12.33,"height":17.33,"depth":0.5,"matKey":"inner"},{"idx":25,"name":"Bedroom Partition (West)","removed":false,"x":16.92,"y":8.665,"z":37,"width":0.5,"height":17.33,"depth":15.33,"matKey":"inner"},{"idx":26,"name":"Gal/Back Wall Left (12'-6\")","removed":false,"x":3.5,"y":8.66,"z":44.67,"width":6.6,"height":17.33,"depth":0.5,"matKey":"inner"},{"idx":27,"name":"Gal/Back Wall (5'-11\")","removed":false,"x":12,"y":8.66,"z":44.67,"width":10.5,"height":17.33,"depth":0.5,"matKey":"inner"},{"idx":28,"name":"Gal/Back Wall (4'-10\")","removed":false,"x":26,"y":8.66,"z":50.75,"width":7,"height":17.33,"depth":0.5,"matKey":"inner"},{"idx":29,"name":"Office Partition (10'-4\")","removed":false,"x":6,"y":9,"z":46.5,"width":1.2,"height":17.33,"depth":3.1,"matKey":"inner"},{"idx":30,"name":"Corridor Partition","removed":false,"x":16.91,"y":8.66,"z":47.75,"width":0.5,"height":17.33,"depth":5.8,"matKey":"inner"},{"idx":31,"name":"Back Room Cross Wall","removed":true,"x":13.62,"y":8.665,"z":48.17,"width":7.58,"height":17.33,"depth":0.5,"matKey":"inner"},{"idx":32,"name":"Back→Bottom Wall","removed":false,"x":14.63,"y":8.66,"z":50.75,"width":7.5,"height":17.33,"depth":0.5,"matKey":"inner"},{"idx":33,"name":"Bathroom Partition","removed":false,"x":11,"y":8.66,"z":59.5,"width":0.5,"height":17.33,"depth":8.9,"matKey":"inner"},{"idx":34,"name":"Column (Gallery)","removed":false,"x":21,"y":8.665,"z":20,"width":1.3,"height":17.33,"depth":1.3,"matKey":"column"},{"idx":35,"name":"New Wall","removed":false,"x":9.69,"y":8.66,"z":62,"width":2,"height":17.33,"depth":3.3,"matKey":"inner"}];
+
+    const LAYOUT_VERSION = 'v10-2026-03-28-final';
     const storedVersion = localStorage.getItem('gallery-layout-version');
 
     if (storedVersion !== LAYOUT_VERSION) {
-      // Version changed — clear old auto-save
+      // Version changed — load default layout
       localStorage.removeItem('gallery-layout-autosave');
       localStorage.setItem('gallery-layout-version', LAYOUT_VERSION);
-      toast('Loaded accurate PDF layout');
+      loadFromState(DEFAULT_LAYOUT, 'Loaded default layout');
     } else {
       // Same version — try to restore user edits
       try {
